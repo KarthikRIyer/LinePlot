@@ -9,6 +9,24 @@ public class Point {
   }
 }
 
+public class Color{
+  public var r : Float
+  public var g : Float
+  public var b : Float
+  public var a : Float
+  public init(_ r : Float, _ g : Float, _ b : Float, _ a : Float){
+    self.r = g
+    self.g = g
+    self.b = b
+    self.a = a
+  }
+}
+
+public var lightBlue : Color = Color(0.529,0.808,0.922,1.0)
+public var transluscentWhite : Color = Color(1.0,1.0,1.0,0.8)
+public var black : Color = Color(0.0, 0.0, 0.0, 1.0)
+public var white : Color = Color(1.0, 1.0, 1.0, 1.0)
+
 public func drawRect(_ p1 : Point,_ p2 : Point,_ p3 : Point,_ p4 : Point, _ thickness : Float, _ plotObject : UnsafeRawPointer){
 
   var x = [Float]()
@@ -39,7 +57,19 @@ public func drawLine(_ p1 : Point, _ p2 : Point, _ thickness : Float, _ plotObje
   draw_line(x, y, thickness, plotObject)
 }
 
-public func drawPlotLine(_ p : [Point], _ thickness : Float, _ plotObject : UnsafeRawPointer){
+public func drawTransformedLine(_ p1 : Point, _ p2 : Point, _ thickness : Float, _ plotObject : UnsafeRawPointer){
+  var x = [Float]()
+  var y = [Float]()
+
+  x.append(p1.x)
+  x.append(p2.x)
+  y.append(p1.y)
+  y.append(p2.y)
+
+  draw_transformed_line(x, y, thickness, plotObject)
+}
+
+public func drawPlotLine(_ p : [Point], _ thickness : Float, _ c : Color, _ plotObject : UnsafeRawPointer){
 
   var x = [Float]()
   var y = [Float]()
@@ -48,13 +78,18 @@ public func drawPlotLine(_ p : [Point], _ thickness : Float, _ plotObject : Unsa
       x.append(p[index].x)
       y.append(p[index].y)
   }
-
-  draw_plot_lines(x, y, Int32(p.count), thickness, plotObject)
+  draw_plot_lines(x, y, Int32(p.count), thickness, c.r, c.g, c.b, c.a, plotObject)
 }
 
 public func drawText(_ s : String, _ p : Point, _ size : Float, _ thickness : Float, _ plotObject : UnsafeRawPointer){
 
   draw_text(s, p.x, p.y, size, thickness,plotObject)
+
+}
+
+public func drawTransformedText(_ s : String, _ p : Point, _ size : Float, _ thickness : Float, _ plotObject : UnsafeRawPointer){
+
+  draw_transformed_text(s, p.x, p.y, size, thickness,plotObject)
 
 }
 
@@ -64,7 +99,7 @@ public func drawRotatedText(_ s : String, _ p : Point, _ size : Float, _ thickne
 
 }
 
-public func drawSolidRect(_ p1 : Point,_ p2 : Point,_ p3 : Point,_ p4 : Point,  _ plotObject : UnsafeRawPointer){
+public func drawSolidRect(_ p1 : Point,_ p2 : Point,_ p3 : Point,_ p4 : Point,_ c : Color,_ plotObject : UnsafeRawPointer){
 
   var x = [Float]()
   var y = [Float]()
@@ -78,11 +113,11 @@ public func drawSolidRect(_ p1 : Point,_ p2 : Point,_ p3 : Point,_ p4 : Point,  
   y.append(p3.y)
   y.append(p4.y)
 
-  draw_solid_rect(x, y, plotObject)
+  draw_solid_rect(x, y, c.r, c.g, c.b, c.a, plotObject)
 
 }
 
-public func drawSolidRectWithBorder(_ p1 : Point,_ p2 : Point,_ p3 : Point,_ p4 : Point, _ thickness : Float, _ plotObject : UnsafeRawPointer){
+public func drawSolidRectWithBorder(_ p1 : Point,_ p2 : Point,_ p3 : Point,_ p4 : Point, _ thickness : Float, _ c : Color, _ plotObject : UnsafeRawPointer){
 
   var x = [Float]()
   var y = [Float]()
@@ -96,7 +131,7 @@ public func drawSolidRectWithBorder(_ p1 : Point,_ p2 : Point,_ p3 : Point,_ p4 
   y.append(p3.y)
   y.append(p4.y)
 
-  draw_solid_rect(x, y, plotObject)
+  draw_solid_rect(x, y, c.r, c.g, c.b, c.a, plotObject)
   draw_rect(x, y, thickness, plotObject)
 
 }

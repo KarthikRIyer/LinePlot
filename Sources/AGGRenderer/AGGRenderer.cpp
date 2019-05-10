@@ -76,7 +76,7 @@ namespace AGGRenderer{
       ren_aa = renderer_aa(rb);
     }
 
-    void draw_solid_rect(const float *x, const float *y){
+    void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a){
 
       agg::path_storage rect_path;
       rect_path.move_to(*x, *y);
@@ -85,7 +85,8 @@ namespace AGGRenderer{
       }
       rect_path.close_polygon();
       m_ras.add_path(rect_path);
-      ren_aa.color(white_translucent);
+      Color c(r, g, b, a);
+      ren_aa.color(c);
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
 
     }
@@ -106,6 +107,23 @@ namespace AGGRenderer{
 
     }
 
+    void draw_transformed_line(const float *x, const float *y, float thickness){
+
+      agg::path_storage rect_path;
+      rect_path.move_to(*x, *y);
+      rect_path.line_to(*(x+1),*(y+1));
+      agg::trans_affine matrix;
+      matrix *= agg::trans_affine_translation(frame_width*0.1f, frame_height*0.1f);
+      agg::conv_transform<agg::path_storage, agg::trans_affine> trans(rect_path, matrix);
+      agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>> curve(trans);
+      agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>> stroke(curve);
+      stroke.width(thickness);
+      m_ras.add_path(stroke);
+      ren_aa.color(black);
+      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
+
+    }
+
     void draw_line(const float *x, const float *y, float thickness){
 
       agg::path_storage rect_path;
@@ -119,17 +137,20 @@ namespace AGGRenderer{
 
     }
 
-    void draw_plot_lines(const float *x, const float *y, int size, float thickness){
+    void draw_plot_lines(const float *x, const float *y, int size, float thickness, float r, float g, float b, float a){
 
       agg::path_storage rect_path;
       rect_path.move_to(*x, *y);
       for (int i = 1; i < size; i++) {
+        std::cout << "x "<<*(x+i)<<" y "<<*(y+i) << '\n';
         rect_path.line_to(*(x+i),*(y+i));
+        rect_path.move_to(*(x+i),*(y+i));
       }
       agg::conv_stroke<agg::path_storage> rect_path_line(rect_path);
       rect_path_line.width(thickness);
       m_ras.add_path(rect_path_line);
-      ren_aa.color(black);
+      Color c(r, g, b, a);
+      ren_aa.color(c);
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
 
     }
@@ -141,6 +162,24 @@ namespace AGGRenderer{
       t.text(s);
       t.start_point(x,y);
       agg::conv_stroke<agg::gsv_text> stroke(t);
+      stroke.width(thickness);
+      m_ras.add_path(stroke);
+      ren_aa.color(black);
+      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
+
+    }
+
+    void draw_transformed_text(const char *s, float x, float y, float size, float thickness){
+
+      agg::gsv_text t;
+      t.size(size);
+      t.text(s);
+      t.start_point(x,y);
+      agg::trans_affine matrix;
+      matrix *= agg::trans_affine_translation(frame_width*0.1f, frame_height*0.1f);
+      agg::conv_transform<agg::gsv_text, agg::trans_affine> trans(t, matrix);
+      agg::conv_curve<agg::conv_transform<agg::gsv_text, agg::trans_affine>> curve(trans);
+      agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::gsv_text, agg::trans_affine>>> stroke(curve);
       stroke.width(thickness);
       m_ras.add_path(stroke);
       ren_aa.color(black);
@@ -177,14 +216,12 @@ namespace AGGRenderer{
     }
 
     void save_image(const char *s){
-
       char* file_ppm = (char *) malloc(1 + strlen(s)+ strlen(".ppm") );
       strcpy(file_ppm, s);
-      strcpy(file_ppm, ".ppm");
+      strcat(file_ppm, ".ppm");
       char* file_png = (char *) malloc(1 + strlen(s)+ strlen(".png") );
-      strcpy(file_ppm, s);
-      strcpy(file_ppm, ".png");
-
+      strcpy(file_png, s);
+      strcat(file_png, ".png");
       write_ppm(buffer, frame_width, frame_height, file_ppm);
 
       std::vector<unsigned char> image(buffer, buffer + (frame_width*frame_height*3));
@@ -208,10 +245,10 @@ namespace AGGRenderer{
 
   }
 
-  void draw_solid_rect(const float *x, const float *y, const void *object){
+  void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, const void *object){
 
     Plot *plot = (Plot *)object;
-    plot -> draw_solid_rect(x, y);
+    plot -> draw_solid_rect(x, y, r, g, b, a);
 
   }
 
@@ -222,10 +259,17 @@ namespace AGGRenderer{
 
   }
 
-  void draw_plot_lines(const float *x, const float *y, int size, float thickness, const void *object){
+  void draw_transformed_line(const float *x, const float *y, float thickness, const void *object){
 
     Plot *plot = (Plot *)object;
-    plot -> draw_plot_lines(x, y, size, thickness);
+    plot -> draw_transformed_line(x, y, thickness);
+
+  }
+
+  void draw_plot_lines(const float *x, const float *y, int size, float thickness, float r, float g, float b, float a, const void *object){
+
+    Plot *plot = (Plot *)object;
+    plot -> draw_plot_lines(x, y, size, thickness, r, g, b, a);
 
   }
 
@@ -233,6 +277,13 @@ namespace AGGRenderer{
 
     Plot *plot = (Plot *)object;
     plot -> draw_text(s, x, y, size, thickness);
+
+  }
+
+  void draw_transformed_text(const char *s, float x, float y, float size, float thickness, const void *object){
+
+    Plot *plot = (Plot *)object;
+    plot -> draw_transformed_text(s, x, y, size, thickness);
 
   }
 

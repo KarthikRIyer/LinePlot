@@ -62,7 +62,7 @@ public class LineGraph {
     topRight      = Point(frame_width*0.9, frame_height*0.9)
     bottomLeft    = Point(frame_width*0.1, frame_height*0.1)
     bottomRight   = Point(frame_width*0.9, frame_height*0.1)
-    legendTopLeft = Point(topLeft.x + 20, topLeft.y + 20)
+    legendTopLeft = Point(topLeft.x + 20, topLeft.y - 20)
 
     graph_width  = 0.8*frame_width
     graph_height = 0.8*frame_height
@@ -77,7 +77,7 @@ public class LineGraph {
     topRight      = Point(frame_width*0.9, frame_height*0.9)
     bottomLeft    = Point(frame_width*0.1, frame_height*0.1)
     bottomRight   = Point(frame_width*0.9, frame_height*0.1)
-    legendTopLeft = Point(topLeft.x + 20, topLeft.y + 20)
+    legendTopLeft = Point(topLeft.x + 20, topLeft.y - 20)
 
     graph_width  = 0.8*frame_width
     graph_height = 0.8*frame_height
@@ -92,7 +92,7 @@ public class LineGraph {
     topRight      = Point(frame_width*0.9, frame_height*0.9)
     bottomLeft    = Point(frame_width*0.1, frame_height*0.1)
     bottomRight   = Point(frame_width*0.9, frame_height*0.1)
-    legendTopLeft = Point(topLeft.x + 20, topLeft.y + 20)
+    legendTopLeft = Point(topLeft.x + 20, topLeft.y - 20)
 
     graph_width  = 0.8*frame_width
     graph_height = 0.8*frame_height
@@ -267,7 +267,7 @@ public class LineGraph {
   }
 
   // functions to draw the graph
-  public func drawGraph(){
+    public func drawGraph(){
     let plotObject : UnsafeRawPointer = initialize()
     calcLabelLocations(plotObject)
     calcMarkerLocAndScalePts(plotObject)
@@ -291,14 +291,14 @@ public class LineGraph {
     for index in 0..<x_markers.count {
         let p1 : Point = Point(x_markers[index].x, -3)
         let p2 : Point = Point(x_markers[index].x, 0)
-        drawLine(p1, p2, border_thickness, plotObject)
-        drawText(x_markers_text[index], x_markers_text_loc[index], marker_text_size, 0.7, plotObject)
+        drawTransformedLine(p1, p2, border_thickness, plotObject)
+        drawTransformedText(x_markers_text[index], x_markers_text_loc[index], marker_text_size, 0.7, plotObject)
     }
     for index in 0..<y_markers.count {
         let p1 : Point = Point(-3, y_markers[index].y)
         let p2 : Point = Point(0, y_markers[index].y)
-        drawLine(p1, p2, border_thickness, plotObject)
-        drawText(y_markers_text[index], y_markers_text_loc[index], marker_text_size, 0.7, plotObject)
+        drawTransformedLine(p1, p2, border_thickness, plotObject)
+        drawTransformedText(y_markers_text[index], y_markers_text_loc[index], marker_text_size, 0.7, plotObject)
     }
 
   }
@@ -310,7 +310,7 @@ public class LineGraph {
           for p in sp.scaledPoints {
               shiftedScaledPoints.append(getTranslatedPoint(p))
           }
-          drawPlotLine(shiftedScaledPoints, plot_line_thickness, plotObject)
+          drawPlotLine(shiftedScaledPoints, plot_line_thickness, lightBlue, plotObject)
       }
 
   }
@@ -341,14 +341,14 @@ public class LineGraph {
       let p3 : Point = Point(legendTopLeft.x + legendWidth, legendTopLeft.y - legendHeight)
       let p4 : Point = Point(legendTopLeft.x, legendTopLeft.y - legendHeight)
 
-      drawSolidRectWithBorder(p1, p2, p3, p4, border_thickness, plotObject)
+      drawSolidRectWithBorder(p1, p2, p3, p4, border_thickness, transluscentWhite, plotObject)
 
       for i in 0..<subPlots.count {
           let tL : Point = Point(legendTopLeft.x + legend_text_size, legendTopLeft.y - (2.0*Float(i) + 1.0)*legend_text_size)
           let bR : Point = Point(tL.x + legend_text_size, tL.y - legend_text_size)
           let tR : Point = Point(bR.x, tL.y)
           let bL : Point = Point(tL.x, bR.y)
-          drawSolidRect(tL, tR, bR, bL, plotObject)
+          drawSolidRect(tL, tR, bR, bL, lightBlue, plotObject)
           let p : Point = Point(bR.x + legend_text_size, bR.y)
           drawText(subPlots[i].label, p, legend_text_size, 2.0, plotObject)
       }
