@@ -182,7 +182,7 @@ public class LineGraph {
   func calcMarkerLocAndScalePts(_ plotObject : UnsafeRawPointer){
 
     var maximumX : Float = getMaxX(points: subPlots[0].points)
-    var maximumY : Float = getMaxX(points: subPlots[0].points)
+    var maximumY : Float = getMaxY(points: subPlots[0].points)
 
     for index in 1..<subPlots.count {
 
@@ -259,7 +259,7 @@ public class LineGraph {
       for i in 0..<subPlots.count {
           let pts = subPlots[i].points
           for j in 0..<pts.count {
-              let pt : Point = Point(pts[j].x*scaleXInv, pts[j].x*scaleYInv)
+              let pt : Point = Point(pts[j].x*scaleXInv, pts[j].y*scaleYInv)
               subPlots[i].scaledPoints.append(pt)
           }
       }
