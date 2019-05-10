@@ -1,3 +1,13 @@
 # LinePlot
 
-A description of this package.
+### To build
+
+```console
+swift build
+```
+
+### To run
+
+```console
+.build/debug/GraphPlot
+```
