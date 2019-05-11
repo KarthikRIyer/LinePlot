@@ -1,4 +1,6 @@
 import RendererWrapper
+import SVGRenderer
+
 // class defining a point
 public class Point {
   public var x : Float
@@ -27,6 +29,25 @@ public var transluscentWhite : Color = Color(1.0,1.0,1.0,0.8)
 public var black : Color = Color(0.0, 0.0, 0.0, 1.0)
 public var white : Color = Color(1.0, 1.0, 1.0, 1.0)
 
+public var RENDERER_AGG : Int = 0
+public var RENDERER_SVG : Int = 1
+
+public var renderer = RENDERER_AGG
+
+public var svg_renderer : SVGRenderer?
+
+public func setRenderer(renderer r: Int) {
+  switch r {
+  case RENDERER_AGG:
+      renderer = RENDERER_AGG
+  case RENDERER_SVG:
+      renderer = RENDERER_SVG
+  default:
+      renderer = RENDERER_AGG
+  }
+}
+
+//Functions pertaining to AGG Renderer////////////////////////////////////////////////////////////////////////////////////////////////
 public func drawRect(_ p1 : Point,_ p2 : Point,_ p3 : Point,_ p4 : Point, _ thickness : Float, _ plotObject : UnsafeRawPointer){
 
   var x = [Float]()
@@ -146,7 +167,155 @@ public func savePlotImage(_ name : String, _ plotObject : UnsafeRawPointer){
   save_image(name, plotObject)
 }
 
-public func initialize() -> UnsafeRawPointer{
+public func initializeAGG() -> UnsafeRawPointer{
   let object = UnsafeRawPointer(initializePlot())
   return object!
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Functions pertaining to SVG Renderer////////////////////////////////////////////////////////////////////////////////////////////////
+
+//extension to get ascii value of character
+extension Character {
+    var isAscii: Bool {
+        return unicodeScalars.allSatisfy { $0.isASCII }
+    }
+    var ascii: UInt32? {
+        return isAscii ? unicodeScalars.first?.value : nil
+    }
+}
+
+var LCARS_CHAR_SIZE_ARRAY : [Int]?
+
+public func initializeSVG(width w : Float, height h : Float) {
+  LCARS_CHAR_SIZE_ARRAY = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 26, 46, 63, 42, 105, 45, 20, 25, 25, 47, 39, 21, 34, 26, 36, 36, 28, 36, 36, 36, 36, 36, 36, 36, 36, 27, 27, 36, 35, 36, 35, 65, 42, 43, 42, 44, 35, 34, 43, 46, 25, 39, 40, 31, 59, 47, 43, 41, 43, 44, 39, 28, 44, 43, 65, 37, 39, 34, 37, 42, 37, 50, 37, 32, 43, 43, 39, 43, 40, 30, 42, 45, 23, 25, 39, 23, 67, 45, 41, 43, 42, 30, 40, 28, 45, 33, 52, 33, 36, 31, 39, 26, 39, 55]
+  svg_renderer = SVGRenderer(width : w, height : h)
+}
+
+public func getTextWidthSVG(_ text : String, _ size : Float) -> Float {
+
+  var width : Float = 0
+  let scaleFactor = size/100.0
+
+  for i in 0..<text.count {
+    let index =  text.index(text.startIndex, offsetBy: i)
+    width = width + Float(LCARS_CHAR_SIZE_ARRAY![Int(text[index].ascii!)])
+  }
+
+  return width*scaleFactor
+
+}
+
+public func drawRectSVG(_ p1 : Point,_ p2 : Point,_ p3 : Point,_ p4 : Point, _ thickness : Float){
+
+  var x = [Float]()
+  var y = [Float]()
+
+  x.append(p1.x)
+  x.append(p2.x)
+  x.append(p3.x)
+  x.append(p4.x)
+  y.append(p1.y)
+  y.append(p2.y)
+  y.append(p3.y)
+  y.append(p4.y)
+
+  svg_renderer!.draw_rect_svg(x, y, thickness)
+
+}
+
+public func drawLineSVG(_ p1 : Point, _ p2 : Point, _ thickness : Float){
+  var x = [Float]()
+  var y = [Float]()
+
+  x.append(p1.x)
+  x.append(p2.x)
+  y.append(p1.y)
+  y.append(p2.y)
+
+  // draw_line(x, y, thickness, plotObject)
+}
+
+public func drawTransformedLineSVG(_ p1 : Point, _ p2 : Point, _ thickness : Float){
+  var x = [Float]()
+  var y = [Float]()
+
+  x.append(p1.x)
+  x.append(p2.x)
+  y.append(p1.y)
+  y.append(p2.y)
+
+  // draw_transformed_line(x, y, thickness, plotObject)
+}
+
+public func drawPlotLineSVG(_ p : [Point], _ thickness : Float, _ c : Color){
+
+  var x = [Float]()
+  var y = [Float]()
+
+  for index in 0..<p.count {
+      x.append(p[index].x)
+      y.append(p[index].y)
+  }
+  // draw_plot_lines(x, y, Int32(p.count), thickness, c.r, c.g, c.b, c.a, plotObject)
+}
+
+public func drawTextSVG(_ s : String, _ p : Point, _ size : Float, _ thickness : Float){
+
+  // draw_text(s, p.x, p.y, size, thickness,plotObject)
+
+}
+
+public func drawTransformedTextSVG(_ s : String, _ p : Point, _ size : Float, _ thickness : Float){
+
+  // draw_transformed_text(s, p.x, p.y, size, thickness,plotObject)
+
+}
+
+public func drawRotatedTextSVG(_ s : String, _ p : Point, _ size : Float, _ thickness : Float,_ angle : Float){
+
+  // draw_rotated_text(s, p.x, p.y, size, thickness, angle, plotObject)
+
+}
+
+public func drawSolidRectSVG(_ p1 : Point,_ p2 : Point,_ p3 : Point,_ p4 : Point,_ c : Color){
+
+  var x = [Float]()
+  var y = [Float]()
+
+  x.append(p1.x)
+  x.append(p2.x)
+  x.append(p3.x)
+  x.append(p4.x)
+  y.append(p1.y)
+  y.append(p2.y)
+  y.append(p3.y)
+  y.append(p4.y)
+
+  // draw_solid_rect(x, y, c.r, c.g, c.b, c.a, plotObject)
+
+}
+
+public func drawSolidRectWithBorderSVG(_ p1 : Point,_ p2 : Point,_ p3 : Point,_ p4 : Point, _ thickness : Float, _ c : Color){
+
+  var x = [Float]()
+  var y = [Float]()
+
+  x.append(p1.x)
+  x.append(p2.x)
+  x.append(p3.x)
+  x.append(p4.x)
+  y.append(p1.y)
+  y.append(p2.y)
+  y.append(p3.y)
+  y.append(p4.y)
+
+  // draw_solid_rect(x, y, c.r, c.g, c.b, c.a, plotObject)
+  // draw_rect(x, y, thickness, plotObject)
+
+}
+
+public func saveImageSVG(_ name : String) {
+    svg_renderer!.save_image_svg(name)
+}
+
+///////////////////////////////////////////////r//////////////////////////////////////////////////////////////////////////////////////

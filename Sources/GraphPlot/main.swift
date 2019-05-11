@@ -9,4 +9,5 @@ let y2:[Float] = [0,20,100,170]
 var lineGraph : LineGraph = LineGraph()
 lineGraph.addSubPlot(x1, y1, label: "Plot 1")
 lineGraph.addSubPlot(x2, y2, label: "Plot 2")
+lineGraph.setRenderer(renderer : RENDERER_SVG)
 lineGraph.drawGraph()

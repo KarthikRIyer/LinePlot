@@ -143,7 +143,6 @@ namespace AGGRenderer{
       rect_path.move_to(*x, *y);
       for (int i = 1; i < size; i++) {
         rect_path.line_to(*(x+i),*(y+i));
-        std::cout << "x "<<*(x+i)<<" y "<<*(y+i) << '\n';
       }
       agg::conv_stroke<agg::path_storage> rect_path_line(rect_path);
       rect_path_line.width(thickness);

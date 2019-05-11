@@ -24,9 +24,13 @@ let package = Package(
             name: "RendererWrapper",
             dependencies: ["AGGRenderer"],
             path: "Sources/RendererWrapper"),
+	.target(
+            name: "SVGRenderer",
+            dependencies: [],
+            path: "Sources/SVGRenderer"),
         .target(
             name: "Vectorizer",
-            dependencies: ["RendererWrapper"],
+            dependencies: ["RendererWrapper","SVGRenderer"],
             path: "Sources/Vectorizer"),
         .target(
             name: "LinePlot",

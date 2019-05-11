@@ -1,6 +1,9 @@
 import Foundation
 import Vectorizer
 
+public var RENDERER_AGG : Int = 0
+public var RENDERER_SVG : Int = 1
+
 // class defining a subPlot
 public class SubPlot {
 
@@ -82,6 +85,10 @@ public class LineGraph {
     graph_width  = 0.8*frame_width
     graph_height = 0.8*frame_height
 
+  }
+
+  public func setRenderer(renderer r: Int) {
+      Vectorizer.setRenderer(renderer : r)
   }
 
   public func setPlotDimensions(width w: Float, height h: Float){
@@ -179,6 +186,18 @@ public class LineGraph {
 
   }
 
+  func calcLabelLocationsSVG(){
+
+    let x_width     : Float = getTextWidthSVG(x_label, label_size)
+    let y_width     : Float = getTextWidthSVG(y_label, label_size)
+    let title_width : Float = getTextWidthSVG(plotTitle, title_size)
+
+    x_label_loc = Point(((bottomRight.x + bottomLeft.x)/2.0) - x_width/2.0, bottomLeft.y - title_size - 0.05*graph_height)
+    y_label_loc = Point((bottomLeft.x - title_size - 0.05*graph_width), ((bottomLeft.y + topLeft.y)/2.0 - y_width))
+    title_loc   = Point(((topRight.x + topLeft.x)/2.0) - title_width/2.0, topLeft.y + title_size/2.0)
+
+  }
+
   func calcMarkerLocAndScalePts(_ plotObject : UnsafeRawPointer){
 
     var maximumX : Float = getMaxX(points: subPlots[0].points)
@@ -266,23 +285,145 @@ public class LineGraph {
 
   }
 
+  func calcMarkerLocAndScalePtsSVG(){
+
+    var maximumX : Float = getMaxX(points: subPlots[0].points)
+    var maximumY : Float = getMaxY(points: subPlots[0].points)
+
+    for index in 1..<subPlots.count {
+
+        let sp : SubPlot = subPlots[index]
+        let pts = sp.points
+        let x : Float = getMaxX(points: pts)
+        let y : Float = getMaxY(points: pts)
+        if (x > maximumX) {
+          maximumX = x
+        }
+        if (y > maximumY) {
+          maximumY = y
+        }
+      }
+
+      let rightScaleMargin : Float = (frame_width - graph_width)/2.0 - 10.0;
+      let topScaleMargin : Float = (frame_height - graph_height)/2.0 - 10.0;
+      scaleX = maximumX / (graph_width - rightScaleMargin);
+      scaleY = maximumY / (graph_height - topScaleMargin);
+
+      let nD1 : Int = getNumberOfDigits(maximumY)
+      var v1 : Float
+      if (nD1 > 1 && maximumY <= pow(Float(10), Float(nD1 - 1))) {
+          v1 = Float(pow(Float(10), Float(nD1 - 2)))
+      } else if (nD1 > 1) {
+          v1 = Float(pow(Float(10), Float(nD1 - 1)))
+      } else {
+          v1 = Float(pow(Float(10), Float(0)))
+      }
+
+      let nY : Float = v1/scaleY
+      var inc1 : Float = nY
+      if(graph_height/nY > MAX_DIV){
+          inc1 = (graph_height/nY)*inc1/MAX_DIV
+      }
+
+      let nD2 : Int = getNumberOfDigits(maximumX)
+      var v2 : Float
+      if (nD2 > 1 && maximumX <= pow(Float(10), Float(nD2 - 1))) {
+          v2 = Float(pow(Float(10), Float(nD2 - 2)))
+      } else if (nD2 > 1) {
+          v2 = Float(pow(Float(10), Float(nD2 - 1)))
+      } else {
+          v2 = Float(pow(Float(10), Float(0)))
+      }
+
+      let nX : Float = v2/scaleX
+      var inc2 : Float = nX
+      var noXD : Float = graph_width/nX
+      if(noXD > MAX_DIV){
+          inc2 = (graph_width/nX)*inc2/MAX_DIV
+          noXD = MAX_DIV
+      }
+
+      // calculate axes marker co-ordinates
+      for i in stride(from: v1/scaleY, through: graph_height, by: inc1) {
+          let p : Point = Point(0, i)
+          y_markers.append(p)
+          let text_p : Point = Point(-(getTextWidthSVG("\(ceil(scaleY*i))", marker_text_size)+5), i - 4)
+          y_markers_text_loc.append(text_p)
+          y_markers_text.append("\(ceil(scaleY*i))")
+      }
+      for i in stride(from: v2/scaleX, through: graph_width, by: inc2) {
+          let p : Point = Point(i, 0)
+          x_markers.append(p)
+          let text_p : Point = Point(i - (getTextWidthSVG("\(ceil(scaleX*i))", marker_text_size)/2.0), -15)
+          x_markers_text_loc.append(text_p)
+          x_markers_text.append("\(ceil(scaleX*i))")
+      }
+      // scale points to be plotted according to plot size
+      let scaleXInv : Float = 1.0/scaleX;
+      let scaleYInv : Float = 1.0/scaleY;
+
+      for i in 0..<subPlots.count {
+          let pts = subPlots[i].points
+          for j in 0..<pts.count {
+              let pt : Point = Point(pts[j].x*scaleXInv, pts[j].y*scaleYInv)
+              subPlots[i].scaledPoints.append(pt)
+          }
+      }
+
+  }
+
   // functions to draw the graph
     public func drawGraph(){
-    let plotObject : UnsafeRawPointer = initialize()
-    calcLabelLocations(plotObject)
-    calcMarkerLocAndScalePts(plotObject)
-    drawBorder(plotObject)
-    drawMarkers(plotObject)
-    drawPlots(plotObject)
-    drawTitle(plotObject)
-    drawLabels(plotObject)
-    drawLegends(plotObject)
-    saveImage("swift_plot_test", plotObject)
+      switch renderer {
+        case RENDERER_AGG:
+          let plotObject : UnsafeRawPointer = initializeAGG()
+          calcLabelLocations(plotObject)
+          calcMarkerLocAndScalePts(plotObject)
+          drawBorder(plotObject)
+          drawMarkers(plotObject)
+          drawPlots(plotObject)
+          drawTitle(plotObject)
+          drawLabels(plotObject)
+          drawLegends(plotObject)
+          saveImage("swift_plot_test", plotObject)
+
+        case RENDERER_SVG:
+          initializeSVG(width : frame_width, height : frame_height)
+          calcLabelLocationsSVG()
+          calcMarkerLocAndScalePtsSVG()
+          drawBorderSVG()
+          // drawMarkersSVG()
+          // drawPlotsSVG()
+          // drawTitleSVG()
+          // drawLabelsSVG()
+          // drawLegendsSVG()
+          saveImageSVG("swift_plot_test")
+
+        default:
+          let plotObject : UnsafeRawPointer = initializeAGG()
+          calcLabelLocations(plotObject)
+          calcMarkerLocAndScalePts(plotObject)
+          drawBorder(plotObject)
+          drawMarkers(plotObject)
+          drawPlots(plotObject)
+          drawTitle(plotObject)
+          drawLabels(plotObject)
+          drawLegends(plotObject)
+          saveImage("swift_plot_test", plotObject)
+
+      }
+
   }
 
   func drawBorder(_ plotObject : UnsafeRawPointer){
 
     drawRect(topLeft, topRight, bottomRight, bottomLeft, border_thickness, plotObject)
+
+  }
+
+  func drawBorderSVG(){
+
+    drawRectSVG(topLeft, topRight, bottomRight, bottomLeft, border_thickness)
 
   }
 
