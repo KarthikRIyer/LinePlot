@@ -12,6 +12,8 @@
 #include "agg_conv_curve.h"
 //lodepng library
 #include "lodepng.h"
+//header to save bitmaps
+#include "savebmp.h"
 
 #define AGG_RGB24
 #include "include/pixel_formats.h"
@@ -39,6 +41,10 @@ namespace AGGRenderer{
                               frame_height,
                               -frame_width*3);
   pixfmt pixf(rbuf);
+
+  void write_bmp(const unsigned char* buf, unsigned width, unsigned height, const char* file_name){
+    saveBMP(buf, width, height, file_name);
+  }
 
   void write_png(std::vector<unsigned char>& image, unsigned width, unsigned height, const char* filename) {
     //Encode the image
@@ -220,10 +226,15 @@ namespace AGGRenderer{
       char* file_png = (char *) malloc(1 + strlen(s)+ strlen(".png") );
       strcpy(file_png, s);
       strcat(file_png, ".png");
+      char* file_bmp = (char *) malloc(1 + strlen(s)+ strlen(".bmp") );
+      strcpy(file_bmp, s);
+      strcat(file_bmp, ".bmp");
       write_ppm(buffer, frame_width, frame_height, file_ppm);
 
       std::vector<unsigned char> image(buffer, buffer + (frame_width*frame_height*3));
       write_png(image, frame_width, frame_height, file_png);
+
+      write_bmp(buffer, frame_width, frame_height, file_bmp);
 
       delete[] buffer;
     }
