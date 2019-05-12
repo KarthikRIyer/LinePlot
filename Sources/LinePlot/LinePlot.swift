@@ -395,7 +395,7 @@ public class LineGraph {
           drawMarkersSVG()
           drawPlotsSVG()
           drawTitleSVG()
-          // drawLabelsSVG()
+          drawLabelsSVG()
           // drawLegendsSVG()
           saveImageSVG("swift_plot_test")
 
@@ -492,6 +492,11 @@ public class LineGraph {
   func drawLabels(_ plotObject : UnsafeRawPointer) {
       drawText(x_label, x_label_loc, label_size, 2.0, plotObject)
       drawRotatedText(y_label, y_label_loc, label_size, 2.0, 90, plotObject)
+  }
+
+  func drawLabelsSVG() {
+      drawTextSVG(x_label, x_label_loc, label_size, 2.0)
+      drawTextSVG(y_label, y_label_loc, label_size, 2.0, -90)
   }
 
   func drawLegends(_ plotObject : UnsafeRawPointer) {

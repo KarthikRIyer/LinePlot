@@ -260,15 +260,15 @@ public func drawPlotLineSVG(_ p : [Point], _ thickness : Float, _ c : Color){
   svg_renderer!.draw_plot_lines_svg(x, y, thickness, c.r, c.g, c.b, c.a)
 }
 
-public func drawTextSVG(_ s : String, _ p : Point, _ size : Float, _ thickness : Float){
+public func drawTextSVG(_ s : String, _ p : Point, _ size : Float, _ thickness : Float, _ angle : Float = 0){
 
-  svg_renderer!.draw_text_svg(s, p.x, p.y, size, thickness)
+  svg_renderer!.draw_text_svg(s, p.x, p.y, size, thickness, angle)
 
 }
 
-public func drawTransformedTextSVG(_ s : String, _ p : Point, _ size : Float, _ thickness : Float){
+public func drawTransformedTextSVG(_ s : String, _ p : Point, _ size : Float, _ thickness : Float, _ angle : Float = 0){
 
-  svg_renderer!.draw_transformed_text_svg(s, p.x, p.y, size, thickness)
+  svg_renderer!.draw_transformed_text_svg(s, p.x, p.y, size, thickness, angle)
 
 }
 
