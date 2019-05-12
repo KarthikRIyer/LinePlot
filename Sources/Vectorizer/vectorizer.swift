@@ -262,7 +262,7 @@ public func drawPlotLineSVG(_ p : [Point], _ thickness : Float, _ c : Color){
 
 public func drawTextSVG(_ s : String, _ p : Point, _ size : Float, _ thickness : Float){
 
-  // draw_text(s, p.x, p.y, size, thickness,plotObject)
+  svg_renderer!.draw_text_svg(s, p.x, p.y, size, thickness)
 
 }
 
