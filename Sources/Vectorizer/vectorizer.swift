@@ -200,6 +200,7 @@ public func getTextWidthSVG(_ text : String, _ size : Float) -> Float {
     let index =  text.index(text.startIndex, offsetBy: i)
     width = width + Float(LCARS_CHAR_SIZE_ARRAY![Int(text[index].ascii!)])
   }
+  // print("\(text) = \(width*scaleFactor)")
 
   return width*scaleFactor
 
@@ -244,7 +245,7 @@ public func drawTransformedLineSVG(_ p1 : Point, _ p2 : Point, _ thickness : Flo
   y.append(p1.y)
   y.append(p2.y)
 
-  // draw_transformed_line(x, y, thickness, plotObject)
+  svg_renderer!.draw_transformed_line_svg(x, y, thickness)
 }
 
 public func drawPlotLineSVG(_ p : [Point], _ thickness : Float, _ c : Color){
@@ -256,7 +257,7 @@ public func drawPlotLineSVG(_ p : [Point], _ thickness : Float, _ c : Color){
       x.append(p[index].x)
       y.append(p[index].y)
   }
-  // draw_plot_lines(x, y, Int32(p.count), thickness, c.r, c.g, c.b, c.a, plotObject)
+  svg_renderer!.draw_plot_lines_svg(x, y, thickness, c.r, c.g, c.b, c.a)
 }
 
 public func drawTextSVG(_ s : String, _ p : Point, _ size : Float, _ thickness : Float){
@@ -267,7 +268,7 @@ public func drawTextSVG(_ s : String, _ p : Point, _ size : Float, _ thickness :
 
 public func drawTransformedTextSVG(_ s : String, _ p : Point, _ size : Float, _ thickness : Float){
 
-  // draw_transformed_text(s, p.x, p.y, size, thickness,plotObject)
+  svg_renderer!.draw_transformed_text_svg(s, p.x, p.y, size, thickness)
 
 }
 

@@ -392,8 +392,8 @@ public class LineGraph {
           calcLabelLocationsSVG()
           calcMarkerLocAndScalePtsSVG()
           drawBorderSVG()
-          // drawMarkersSVG()
-          // drawPlotsSVG()
+          drawMarkersSVG()
+          drawPlotsSVG()
           // drawTitleSVG()
           // drawLabelsSVG()
           // drawLegendsSVG()
@@ -444,6 +444,23 @@ public class LineGraph {
 
   }
 
+  func drawMarkersSVG() {
+
+    for index in 0..<x_markers.count {
+        let p1 : Point = Point(x_markers[index].x, -3)
+        let p2 : Point = Point(x_markers[index].x, 0)
+        drawTransformedLineSVG(p1, p2, border_thickness)
+        drawTransformedTextSVG(x_markers_text[index], x_markers_text_loc[index], marker_text_size, 0.7)
+    }
+    for index in 0..<y_markers.count {
+        let p1 : Point = Point(-3, y_markers[index].y)
+        let p2 : Point = Point(0, y_markers[index].y)
+        drawTransformedLineSVG(p1, p2, border_thickness)
+        drawTransformedTextSVG(y_markers_text[index], y_markers_text_loc[index], marker_text_size, 0.7)
+    }
+
+  }
+
   func drawPlots(_ plotObject : UnsafeRawPointer) {
 
       for sp in subPlots {
@@ -452,6 +469,14 @@ public class LineGraph {
               shiftedScaledPoints.append(getTranslatedPoint(p))
           }
           drawPlotLine(shiftedScaledPoints, plot_line_thickness, lightBlue, plotObject)
+      }
+
+  }
+
+  func drawPlotsSVG() {
+
+      for sp in subPlots {
+          drawPlotLineSVG(sp.scaledPoints, plot_line_thickness, lightBlue)
       }
 
   }
