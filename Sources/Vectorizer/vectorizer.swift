@@ -202,7 +202,7 @@ public func getTextWidthSVG(_ text : String, _ size : Float) -> Float {
   }
   // print("\(text) = \(width*scaleFactor)")
 
-  return width*scaleFactor
+  return width*scaleFactor + 15
 
 }
 

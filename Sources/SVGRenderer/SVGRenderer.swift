@@ -46,14 +46,14 @@ public class SVGRenderer{
 
   public func draw_transformed_text_svg(_ s : String, _ x : Float, _ y : Float, _ size : Float, _ thickness : Float, _ angle : Float = 0){
     let x1 = x + 0.1*width
-    let y1 = height - y + 0.1*height
-    let text = "<text x=\"\(x1)\" y=\"\(y1)\" fill=\"black\"  transform=\"rotate(\(angle),\(x1),\(y1))\">\(s)</text>"
+    let y1 = height - y - 0.1*height
+    let text = "<text x=\"\(x1)\" y=\"\(y1)\" stroke=\"#000000\" stroke-width=\"\(thickness)\" transform=\"rotate(\(angle),\(x1),\(y1))\">\(s)</text>"
     image = image + "\n" + text
   }
 
   public func draw_text_svg(_ s : String, _ x : Float, _ y : Float, _ size : Float, _ thickness : Float, _ angle : Float = 0){
     let y1 = height - y
-    let text = "<text x=\"\(x)\" y=\"\(y1)\" fill=\"black\"  transform=\"rotate(\(angle),\(x),\(y1))\">\(s)</text>"
+    let text = "<text x=\"\(x)\" y=\"\(y1)\" stroke=\"#000000\" stroke-width=\"\(thickness)\"  transform=\"rotate(\(angle),\(x),\(y1))\">\(s)</text>"
     image = image + "\n" + text
   }
 

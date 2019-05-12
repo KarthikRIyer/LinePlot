@@ -373,7 +373,7 @@ public class LineGraph {
   }
 
   // functions to draw the graph
-    public func drawGraph(){
+    public func drawGraph(fileName name : String = "swift_plot_test"){
       switch renderer {
         case RENDERER_AGG:
           let plotObject : UnsafeRawPointer = initializeAGG()
@@ -385,7 +385,7 @@ public class LineGraph {
           drawTitle(plotObject)
           drawLabels(plotObject)
           drawLegends(plotObject)
-          saveImage("swift_plot_test", plotObject)
+          saveImage(name, plotObject)
 
         case RENDERER_SVG:
           initializeSVG(width : frame_width, height : frame_height)
@@ -397,7 +397,7 @@ public class LineGraph {
           drawTitleSVG()
           drawLabelsSVG()
           drawLegendsSVG()
-          saveImageSVG("swift_plot_test")
+          saveImageSVG(name)
 
         default:
           let plotObject : UnsafeRawPointer = initializeAGG()
@@ -409,7 +409,7 @@ public class LineGraph {
           drawTitle(plotObject)
           drawLabels(plotObject)
           drawLegends(plotObject)
-          saveImage("swift_plot_test", plotObject)
+          saveImage(name, plotObject)
 
       }
 
@@ -486,7 +486,7 @@ public class LineGraph {
   }
 
   func drawTitleSVG() {
-      drawTextSVG(plotTitle, title_loc, title_size, 2.0)
+      drawTextSVG(plotTitle, title_loc, title_size, 1.2)
   }
 
   func drawLabels(_ plotObject : UnsafeRawPointer) {
@@ -495,8 +495,8 @@ public class LineGraph {
   }
 
   func drawLabelsSVG() {
-      drawTextSVG(x_label, x_label_loc, label_size, 2.0)
-      drawTextSVG(y_label, y_label_loc, label_size, 2.0, -90)
+      drawTextSVG(x_label, x_label_loc, label_size, 1.2)
+      drawTextSVG(y_label, y_label_loc, label_size, 1.2, -90)
   }
 
   func drawLegends(_ plotObject : UnsafeRawPointer) {
@@ -556,7 +556,7 @@ public class LineGraph {
           let bL : Point = Point(tL.x, bR.y)
           drawSolidRectSVG(tL, tR, bR, bL, lightBlue)
           let p : Point = Point(bR.x + legend_text_size, bR.y)
-          drawTextSVG(subPlots[i].label, p, legend_text_size, 2.0)
+          drawTextSVG(subPlots[i].label, p, legend_text_size, 1.2)
       }
 
   }
