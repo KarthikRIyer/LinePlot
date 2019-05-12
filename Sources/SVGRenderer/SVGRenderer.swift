@@ -8,7 +8,7 @@ public class SVGRenderer{
   public init(width w : Float, height h : Float) {
     width = w
     height = h
-    image = "<svg height=\"\(h)\" width=\"\(w)\">"
+    image = "<svg height=\"\(h)\" width=\"\(w)\" version=\"4.0\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink= \"http://www.w3.org/1999/xlink\">"
     image = image + "\n" + "<rect width=\"100%\" height=\"100%\" fill=\"white\"/>";
   }
 
