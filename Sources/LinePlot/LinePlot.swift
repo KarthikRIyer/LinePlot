@@ -4,15 +4,23 @@ import Vectorizer
 public var RENDERER_AGG : Int = 0
 public var RENDERER_SVG : Int = 1
 
+public var lightBlue : Color = Color(0.529,0.808,0.922,1.0)
+public var transluscentWhite : Color = Color(1.0,1.0,1.0,0.8)
+public var black : Color = Color(0.0, 0.0, 0.0, 1.0)
+public var white : Color = Color(1.0, 1.0, 1.0, 1.0)
+public var orange : Color = Color(1.0, 0.647, 0.0, 1.0)
+
 // class defining a subPlot
 public class SubPlot {
 
   var points = [Point]()
   var scaledPoints = [Point]()
   var label: String = "Plot"
-  init(points p: [Point], label l: String){
+  var color : Color
+  init(points p: [Point], label l: String, color c: Color = lightBlue){
     points = p
     label = l
+    color = c
   }
 }
 
@@ -122,17 +130,17 @@ public class LineGraph {
   public func addSubPlot(subPlot s: SubPlot){
     subPlots.append(s)
   }
-  public func addSubPlot(points p: [Point], label l: String){
-    let s = SubPlot(points: p,label: "Plot")
+  public func addSubPlot(points p: [Point], label l: String, color c : Color = lightBlue){
+    let s = SubPlot(points: p,label: "Plot", color: c)
     subPlots.append(s)
   }
-  public func addSubPlot(_ x : [Float], _ y : [Float], label l: String){
+  public func addSubPlot(_ x : [Float], _ y : [Float], label l: String, color c : Color = lightBlue){
 
     var pts = [Point]()
     for i in 0..<x.count {
         pts.append(Point(x[i], y[i]))
     }
-    let s = SubPlot(points: pts,label: l)
+    let s = SubPlot(points: pts, label: l, color: c)
     subPlots.append(s)
   }
 
@@ -468,7 +476,7 @@ public class LineGraph {
           for p in sp.scaledPoints {
               shiftedScaledPoints.append(getTranslatedPoint(p))
           }
-          drawPlotLine(shiftedScaledPoints, plot_line_thickness, lightBlue, plotObject)
+          drawPlotLine(shiftedScaledPoints, plot_line_thickness, sp.color, plotObject)
       }
 
   }
@@ -476,7 +484,7 @@ public class LineGraph {
   func drawPlotsSVG() {
 
       for sp in subPlots {
-          drawPlotLineSVG(sp.scaledPoints, plot_line_thickness, lightBlue)
+          drawPlotLineSVG(sp.scaledPoints, plot_line_thickness, sp.color)
       }
 
   }
@@ -523,7 +531,7 @@ public class LineGraph {
           let bR : Point = Point(tL.x + legend_text_size, tL.y - legend_text_size)
           let tR : Point = Point(bR.x, tL.y)
           let bL : Point = Point(tL.x, bR.y)
-          drawSolidRect(tL, tR, bR, bL, lightBlue, plotObject)
+          drawSolidRect(tL, tR, bR, bL, subPlots[i].color, plotObject)
           let p : Point = Point(bR.x + legend_text_size, bR.y)
           drawText(subPlots[i].label, p, legend_text_size, 2.0, plotObject)
       }
@@ -554,7 +562,7 @@ public class LineGraph {
           let bR : Point = Point(tL.x + legend_text_size, tL.y - legend_text_size)
           let tR : Point = Point(bR.x, tL.y)
           let bL : Point = Point(tL.x, bR.y)
-          drawSolidRectSVG(tL, tR, bR, bL, lightBlue)
+          drawSolidRectSVG(tL, tR, bR, bL, subPlots[i].color)
           let p : Point = Point(bR.x + legend_text_size, bR.y)
           drawTextSVG(subPlots[i].label, p, legend_text_size, 1.2)
       }

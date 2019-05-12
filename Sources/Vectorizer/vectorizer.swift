@@ -24,11 +24,6 @@ public class Color{
   }
 }
 
-public var lightBlue : Color = Color(0.529,0.808,0.922,1.0)
-public var transluscentWhite : Color = Color(1.0,1.0,1.0,0.8)
-public var black : Color = Color(0.0, 0.0, 0.0, 1.0)
-public var white : Color = Color(1.0, 1.0, 1.0, 1.0)
-
 public var RENDERER_AGG : Int = 0
 public var RENDERER_SVG : Int = 1
 
