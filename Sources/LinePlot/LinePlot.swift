@@ -396,7 +396,7 @@ public class LineGraph {
           drawPlotsSVG()
           drawTitleSVG()
           drawLabelsSVG()
-          // drawLegendsSVG()
+          drawLegendsSVG()
           saveImageSVG("swift_plot_test")
 
         default:
@@ -526,6 +526,37 @@ public class LineGraph {
           drawSolidRect(tL, tR, bR, bL, lightBlue, plotObject)
           let p : Point = Point(bR.x + legend_text_size, bR.y)
           drawText(subPlots[i].label, p, legend_text_size, 2.0, plotObject)
+      }
+
+  }
+
+  func drawLegendsSVG() {
+      var maxWidth : Float = 0
+      for sp in subPlots {
+          let w = getTextWidthSVG(sp.label, legend_text_size)
+          if (w > maxWidth) {
+              maxWidth = w
+          }
+      }
+
+      let legendWidth  : Float = maxWidth + 3.5*legend_text_size
+      let legendHeight : Float = (Float(subPlots.count)*2.0 + 1.0)*legend_text_size
+
+      let p1 : Point = Point(legendTopLeft.x, legendTopLeft.y)
+      let p2 : Point = Point(legendTopLeft.x + legendWidth, legendTopLeft.y)
+      let p3 : Point = Point(legendTopLeft.x + legendWidth, legendTopLeft.y - legendHeight)
+      let p4 : Point = Point(legendTopLeft.x, legendTopLeft.y - legendHeight)
+
+      drawSolidRectWithBorderSVG(p1, p2, p3, p4, border_thickness, transluscentWhite)
+
+      for i in 0..<subPlots.count {
+          let tL : Point = Point(legendTopLeft.x + legend_text_size, legendTopLeft.y - (2.0*Float(i) + 1.0)*legend_text_size)
+          let bR : Point = Point(tL.x + legend_text_size, tL.y - legend_text_size)
+          let tR : Point = Point(bR.x, tL.y)
+          let bL : Point = Point(tL.x, bR.y)
+          drawSolidRectSVG(tL, tR, bR, bL, lightBlue)
+          let p : Point = Point(bR.x + legend_text_size, bR.y)
+          drawTextSVG(subPlots[i].label, p, legend_text_size, 2.0)
       }
 
   }

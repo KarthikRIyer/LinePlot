@@ -272,12 +272,6 @@ public func drawTransformedTextSVG(_ s : String, _ p : Point, _ size : Float, _ 
 
 }
 
-public func drawRotatedTextSVG(_ s : String, _ p : Point, _ size : Float, _ thickness : Float,_ angle : Float){
-
-  // draw_rotated_text(s, p.x, p.y, size, thickness, angle, plotObject)
-
-}
-
 public func drawSolidRectSVG(_ p1 : Point,_ p2 : Point,_ p3 : Point,_ p4 : Point,_ c : Color){
 
   var x = [Float]()
@@ -292,7 +286,7 @@ public func drawSolidRectSVG(_ p1 : Point,_ p2 : Point,_ p3 : Point,_ p4 : Point
   y.append(p3.y)
   y.append(p4.y)
 
-  // draw_solid_rect(x, y, c.r, c.g, c.b, c.a, plotObject)
+  svg_renderer!.draw_solid_rect_svg(x, y, c.r, c.g, c.b, c.a)
 
 }
 
@@ -310,8 +304,7 @@ public func drawSolidRectWithBorderSVG(_ p1 : Point,_ p2 : Point,_ p3 : Point,_ 
   y.append(p3.y)
   y.append(p4.y)
 
-  // draw_solid_rect(x, y, c.r, c.g, c.b, c.a, plotObject)
-  // draw_rect(x, y, thickness, plotObject)
+  svg_renderer!.draw_solid_rect_with_border_svg(x, y, thickness, c.r, c.g, c.b, c.a)
 
 }
 
